@@ -2,6 +2,7 @@ const db = require("../db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const { body, validationResult } = require('express-validator');
+require('dotenv').config();
 
 
 // authentication endpoint*
@@ -24,6 +25,16 @@ exports.signup = [
 
     async function (req, res, next) {
         try {
+            // validation errors
+            const errors = validationResult(req);
+
+            if (!errors.isEmpty()) {
+                res.json({ errors: errors.array() });
+                return;
+            }
+
+            // error handling when user already exists*
+
             // get username and password from req body 
             const { username, password } = req.body;
 
@@ -44,15 +55,15 @@ exports.signup = [
             );
         }
         catch (error) {
-            // send error message to client*
-            return next(error)
+            // send error message to client
+            res.send(error);
         }
     }
 ];
 
 // LOGIN
 exports.login = [
-    // 1. validate and sanitize
+    // validate and sanitize
     body('username', 'please enter a username')
         .trim()
         .notEmpty()
@@ -65,38 +76,57 @@ exports.login = [
     async function (req, res, next) {
 
         try {
+
+            // validation errors
+            const errors = validationResult(req);
+
+            if (!errors.isEmpty()) {
+                res.json({ errors: errors.array() });
+                return;
+            }
+
             const { username, password } = req.body;
 
             // 2. find user
-            const text = 'SELECT FROM user_profiles WHERE username = $1';
+            const text = 'SELECT * FROM user_profiles WHERE username = $1';
             const values = [username];
 
             // query db
             const result = await db.query(text, values);
 
-            // 3. if user exists get password from query and compare
+            const user = result.rows[0];
 
-            // bcrypt.compare(password, user.password)
+            // if user not found
+            if (!user) {
+                return res.json({ errors: [{ msg: "user not found" }] });
+            };
 
-            // 4. if password matches create / sign JWT
-            //   create JWT token
+            // if user found get password from query and compare
+            const passwordCompare = await bcrypt.compare(password, user.password);
+
+            // if passwords dont match
+            if (!passwordCompare) {
+                return res.json({ errors: [{ msg: "passwords don't match" }] });
+            }
+
+            // if passwords match create / sign JWT
             const token = jwt.sign(
                 {
-                    userId: user.id,
-                    userName: user.name
+                    user_id: user.user_id,
+                    username: user.username
                 },
-                "private_key",
+                process.env.PRIVATE_KEY,
                 { expiresIn: "24h" }
             );
 
-            // 5. send success response (token, userid)
-            res.status(200).send({
+            // send success response (token, userid)
+            res.status(200).json({
                 message: "Login Successful",
                 token,
             });
         }
         catch (error) {
-            return next(error);
+            res.send(error)
         }
     }
 ];
