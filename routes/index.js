@@ -4,6 +4,7 @@ const router = express.Router();
 const authController = require("../controllers/auth");
 const matrixController = require("../controllers/matrix");
 
+// AUTHENTICATION
 // sign up
 router.post("/signup", authController.signup);
 
@@ -14,6 +15,19 @@ router.post("/login", authController.login);
 router.post("/logout", authController.logout);
 
 // delete account
-router.post("/delete", authController.delete);
+router.post("/delete-user", authController.delete);
+
+// MATRIX
+// get matrix
+router.post("/matrix", matrixController.getMatrix);
+
+// create matrix
+router.post("/new-matrix", matrixController.createMatrix);
+
+// update matrix
+router.put("/update-matrix", matrixController.updateMatrix);
+
+// delete matrix
+router.delete("/delete-matrix", matrixController.deleteMatrix);
 
 module.exports = router;
