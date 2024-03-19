@@ -74,9 +74,7 @@ exports.login = [
         .escape(),
 
     async function (req, res, next) {
-
         try {
-
             // validation errors
             const errors = validationResult(req);
 
@@ -87,7 +85,7 @@ exports.login = [
 
             const { username, password } = req.body;
 
-            // 2. find user
+            // find user
             const text = 'SELECT * FROM user_profiles WHERE username = $1';
             const values = [username];
 
@@ -119,10 +117,19 @@ exports.login = [
                 { expiresIn: "24h" }
             );
 
+            // get user matrix instances using user_id
+            const user_text = 'SELECT * FROM matrix_instances WHERE user_profile = $1';
+            const user_values = [user.user_id];
+
+            const result_2 = await db.query(user_text, user_values);
+
+            const user_matrix_instances = result_2.rows;
+
             // send success response (token, userid)
             res.status(200).json({
                 message: "Login Successful",
                 token,
+                user_matrix_instances
             });
         }
         catch (error) {
