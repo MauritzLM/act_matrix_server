@@ -3,13 +3,11 @@ const auth = require("../middlewares/authJWT");
 const db = require("../db");
 const { body, validationResult } = require('express-validator');
 
-// auth function provides user_id and username - (req.user)*
-
 // get matrix
 exports.getMatrix = [auth,
     async function (req, res, next) {
         try {
-            // get info from req.user (passed from auth function) / req.body*
+            // get instance id from request
             const { id } = req.body;
 
             // get matrix using title
@@ -20,6 +18,7 @@ exports.getMatrix = [auth,
 
             const matrix = result.rows[0];
 
+            // respond with result
             res.json(matrix);
 
         }
@@ -59,7 +58,7 @@ exports.createMatrix = [
     auth,
     async function (req, res, next) {
         try {
-            // get title and user id
+            // get title and user id from request
             const { title } = req.body;
             const { user_id } = req.user;
 
@@ -97,7 +96,7 @@ exports.updateMatrix = [
     auth,
     async function (req, res, next) {
         try {
-            // get id and values from req.body
+            // get id and quadrant content from request
             const { instance_id, q1, q2, q3, q4 } = req.body;
 
             // query db
@@ -106,6 +105,7 @@ exports.updateMatrix = [
 
             const result = await db.query(text, values);
 
+            // success message
             res.json("matrix updated");
 
         }
@@ -120,13 +120,19 @@ exports.deleteMatrix = [
     auth,
     async function (req, res, next) {
         try {
-            const { instance_id } = req.body;
+            // get instance id from request
+            const { instance_id, user_id } = req.body;
 
             // remove row from table using id
+            const text = 'DELETE FROM matrix_instances WHERE instance_id = $1 AND user_profile = $2';
+            const values = [instance_id, user_id];
+
+            const result = await db.query(text, values);
+
+            res.json("delete successful");
         }
         catch (error) {
             return next(error)
         }
     }
 ];
-
