@@ -5,15 +5,9 @@ const { body, validationResult } = require('express-validator');
 require('dotenv').config();
 
 
-// authentication endpoint*
-// app.get("/auth-endpoint", auth, (request, response) => {
-//     response.json({ message: "You are authorized to access me" });
-//   });
-
-
 // SIGN UP
 exports.signup = [
-    // 1. validate and sanitize
+    // validate and sanitize
     body('username', 'please enter a valid name')
         .trim()
         .isLength({ min: 4, max: 20 })
@@ -33,26 +27,35 @@ exports.signup = [
                 return;
             }
 
-            // error handling when user already exists*
-
             // get username and password from req body 
             const { username, password } = req.body;
 
-            // 2. hash password with bcrypt
-            const hashedPassword = await bcrypt.hash(password, 10);
+            // error handling when username already exists
+            const text = 'SELECT * FROM user_profiles WHERE username = $1';
+            const values = [username];
 
-            // 3. create new user and save in db
-            const text = 'INSERT INTO user_profiles (username, password) VALUES($1, $2)';
-            const values = [username, hashedPassword];
-
-            // query db
+            // look for username
             const result = await db.query(text, values);
 
-            res.json(
-                {
-                    "message": "user created"
-                }
-            );
+            const user = result.rows[0];
+ 
+            // if username found
+            if (user) {
+                return res.json({ "message": "username already in use" });
+            };
+
+            // else if username not found
+            // hash password with bcrypt
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            // create new user and save in db
+            const new_user_text = 'INSERT INTO user_profiles (username, password) VALUES($1, $2)';
+            const new_user_values = [username, hashedPassword];
+
+            // query db
+            const new_user_result = await db.query(new_user_text, new_user_values);
+
+            res.json({"message": "user created"});
         }
         catch (error) {
             // send error message to client
@@ -83,6 +86,7 @@ exports.login = [
                 return;
             }
 
+            // get username and password from request
             const { username, password } = req.body;
 
             // find user
