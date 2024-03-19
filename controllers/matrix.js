@@ -29,6 +29,31 @@ exports.getMatrix = [auth,
     }
 ];
 
+// get all matrix
+exports.getAllMatrix = [auth,
+    async function (req, res, next) {
+        try {
+            // get user id from request
+            const { id } = req.body;
+
+            // query db
+            const text = 'SELECT * FROM matrix_instances WHERE user_profile = $2';
+            const values = [id];
+
+            const result = await db.query(text, values);
+
+            // return result
+            const user_matrix_instances = result.rows[0];
+
+            res.json(user_matrix_instances);
+
+        }
+        catch (error) {
+            return next(error);
+        }
+    }
+];
+
 // create new matrix
 exports.createMatrix = [
     auth,
@@ -72,11 +97,12 @@ exports.updateMatrix = [
     auth,
     async function (req, res, next) {
         try {
-            // find out what to update / or update everything*
-            const { instance_id, content } = req.body;
+            // get id and values from req.body
+            const { instance_id, q1, q2, q3, q4 } = req.body;
 
-            const text = 'UPDATE matrix_instances SET quadrant_1 = $1 WHERE instance_id = $2'; // *
-            const values = [content, instance_id];
+            // query db
+            const text = 'UPDATE matrix_instances SET quadrant_1 = $1, quadrant_2 = $2, quadrant_3 = $3, quadrant_4 = $4 WHERE instance_id = $5';
+            const values = [q1, q2, q3, q4 , instance_id];
 
             const result = await db.query(text, values);
 
@@ -90,15 +116,16 @@ exports.updateMatrix = [
 ];
 
 // delete matrix
-// 1. delete matrix using id / name
 exports.deleteMatrix = [
     auth,
     async function (req, res, next) {
         try {
+            const { instance_id } = req.body;
 
+            // remove row from table using id
         }
         catch (error) {
-
+            return next(error)
         }
     }
 ];
