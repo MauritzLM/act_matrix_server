@@ -21,6 +21,9 @@ router.post("/delete-user", authController.delete);
 // get matrix
 router.post("/matrix", matrixController.getMatrix);
 
+// get all matrix
+router.post("/all-matrix", matrixController.getAllMatrix);
+
 // create matrix
 router.post("/new-matrix", matrixController.createMatrix);
 
