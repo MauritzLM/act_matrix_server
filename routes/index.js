@@ -31,6 +31,6 @@ router.post("/new-matrix", matrixController.createMatrix);
 router.put("/update-matrix", matrixController.updateMatrix);
 
 // delete matrix
-router.delete("/delete-matrix", matrixController.deleteMatrix);
+router.post("/delete-matrix", matrixController.deleteMatrix);
 
 module.exports = router;
