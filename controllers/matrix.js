@@ -2,6 +2,7 @@
 const auth = require("../middlewares/authJWT");
 const db = require("../db");
 const { body, validationResult } = require('express-validator');
+const sanitizeHtml = require('sanitize-html');
 
 // get matrix
 exports.getMatrix = [auth,
@@ -96,12 +97,19 @@ exports.updateMatrix = [
     auth,
     async function (req, res, next) {
         try {
+            // validate and sanitize*
             // get id and quadrant content from request
             const { instance_id, q1, q2, q3, q4 } = req.body;
 
+            // test values to see if working properly*
+            const q1_sanitized = sanitizeHtml(q1);
+            const q2_sanitized = sanitizeHtml(q2);
+            const q3_sanitized = sanitizeHtml(q3);
+            const q4_sanitized = sanitizeHtml(q4);
+
             // query db
             const text = 'UPDATE matrix_instances SET quadrant_1 = $1, quadrant_2 = $2, quadrant_3 = $3, quadrant_4 = $4 WHERE instance_id = $5';
-            const values = [q1, q2, q3, q4 , instance_id];
+            const values = [q1_sanitized, q2_sanitized, q3_sanitized, q4_sanitized , instance_id];
 
             const result = await db.query(text, values);
 
