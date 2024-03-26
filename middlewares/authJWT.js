@@ -1,29 +1,28 @@
 
-const jwt = require("jsonwebtoken");
+const { expressjwt: jwt } = require('express-jwt');
+const jwksRsa = require('jwks-rsa');
+// const { auth } = require('express-oauth2-jwt-bearer');
 require('dotenv').config();
 
-// verification function
-module.exports = async (req, res, next) => {
-  try {
-    //   get the token from the authorization header
-    const token = await req.headers.authorization.split(" ")[1];
 
-    //check if the token matches the supposed origin
-    const decodedToken = await jwt.verify(token, process.env.PRIVATE_KEY);
+// middleware for checking the JWT
+ module.exports = jwt({
+   // Dynamically provide a signing key based on the kid in the header and the signing keys provided by the JWKS endpoint
+   secret: jwksRsa.expressJwtSecret({
+     cache: true,
+     rateLimit: true,
+     jwksRequestsPerMinute: 5,
+     jwksUri: `https://dev-zjk4ooufkrhlmh82.us.auth0.com/.well-known/jwks.json`
+   }),
 
-    // retrieve the user details of the logged in user
-    const user = await decodedToken;
+   // Validate the audience and the issuer
+   audience: 'http://localhost:3000', //replace with your API's audience, available at Dashboard > APIs
+  issuer: 'https://dev-zjk4ooufkrhlmh82.us.auth0.com/',
+   algorithms: [ 'RS256' ]
+ });
 
-    // pass the user down to the endpoints here
-    req.user = user;
-
-    // pass down functionality to the endpoint
-    next();
-    
-  } catch (error) {
-    res.status(401).json({
-      error: new Error("Invalid request!"),
-    });
-  }
-}
-
+// module.exports = auth({
+//   audience: 'http://localhost:3000',
+//   issuerBaseURL: 'https://dev-zjk4ooufkrhlmh82.us.auth0.com/',
+//   tokenSigningAlg: 'RS256'
+// });
