@@ -11,7 +11,6 @@ exports.getMatrix = [auth,
             // get instance id from request
             const { id } = req.body;
 
-
             // get matrix using title
             const text = 'SELECT * FROM matrix_instances WHERE instance_id = $1';
             const values = [id];
