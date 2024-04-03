@@ -112,17 +112,30 @@ exports.updateMatrix = [
         try {
             // validate and sanitize*
             // get id and quadrant content from request
-            const { instance_id, q1, q2, q3, q4 } = req.body;
+            const { instance_id, quadrant_content, quadrant_number } = req.body;
 
-            // test values to see if working properly*
-            const q1_sanitized = sanitizeHtml(q1);
-            const q2_sanitized = sanitizeHtml(q2);
-            const q3_sanitized = sanitizeHtml(q3);
-            const q4_sanitized = sanitizeHtml(q4);
+            let text;
+
+            // sanitize html content
+            const quadrant_sanitized = sanitizeHtml(quadrant_content);
+            
+            // text of db query based on which quadrant
+            switch (quadrant_number) {
+                case 1:
+                    text = 'UPDATE matrix_instances SET quadrant_1 = $1 WHERE instance_id = $2';
+                    break;
+                case 2:
+                    text = 'UPDATE matrix_instances SET quadrant_2 = $1 WHERE instance_id = $2';
+                    break;
+                case 3:
+                    text = 'UPDATE matrix_instances SET quadrant_3 = $1 WHERE instance_id = $2';
+                    break;
+                case 4:
+                    text = 'UPDATE matrix_instances SET quadrant_4 = $1 WHERE instance_id = $2';
+            } 
 
             // query db
-            const text = 'UPDATE matrix_instances SET quadrant_1 = $1, quadrant_2 = $2, quadrant_3 = $3, quadrant_4 = $4 WHERE instance_id = $5';
-            const values = [q1_sanitized, q2_sanitized, q3_sanitized, q4_sanitized, instance_id];
+            const values = [quadrant_sanitized, instance_id];
 
             const result = await db.query(text, values);
 
