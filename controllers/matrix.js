@@ -72,7 +72,7 @@ exports.createMatrix = [
                 res.json({ errors: errors.array() });
                 return;
             }
-            
+
             // get title and user id from request
             const { title, user_id } = req.body;
 
@@ -118,7 +118,7 @@ exports.updateMatrix = [
 
             // sanitize html content
             const quadrant_sanitized = sanitizeHtml(quadrant_content);
-            
+
             // text of db query based on which quadrant
             switch (quadrant_number) {
                 case 1:
@@ -132,7 +132,7 @@ exports.updateMatrix = [
                     break;
                 case 4:
                     text = 'UPDATE matrix_instances SET quadrant_4 = $1 WHERE instance_id = $2';
-            } 
+            }
 
             // query db
             const values = [quadrant_sanitized, instance_id];
@@ -145,6 +145,42 @@ exports.updateMatrix = [
         }
         catch (error) {
             return next(error);
+        }
+    }
+];
+
+// update matrix title
+exports.updateTitle = [
+    auth,
+    body('newTitle', 'please enter a title')
+        .trim()
+        .notEmpty()
+        .isLength({ min: 4, max: 20 })
+        .escape(),
+    async function (req, res, next) {
+        try {
+            // validation errors
+            const errors = validationResult(req);
+
+            if (!errors.isEmpty()) {
+                res.json({ errors: errors.array() });
+                return;
+            }
+
+            // get instance id and new title from request
+            const { instance_id, newTitle } = req.body;
+
+
+            const text = 'UPDATE matrix_instances SET title = $1 WHERE instance_id = $2';
+            const values = [newTitle, instance_id];
+
+            const result = await db.query(text, values);
+
+            // success message
+            res.json(result);
+        }
+        catch (error) {
+            return next(error)
         }
     }
 ];
