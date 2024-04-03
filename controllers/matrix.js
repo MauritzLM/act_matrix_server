@@ -5,7 +5,8 @@ const { body, validationResult } = require('express-validator');
 const sanitizeHtml = require('sanitize-html');
 
 // get matrix
-exports.getMatrix = [auth,
+exports.getMatrix = [
+    auth,
     async function (req, res, next) {
         try {
             // get instance id from request
@@ -30,7 +31,8 @@ exports.getMatrix = [auth,
 ];
 
 // get all matrix
-exports.getAllMatrix = [auth,
+exports.getAllMatrix = [
+    auth,
     async function (req, res, next) {
         try {
             // get user id from request
