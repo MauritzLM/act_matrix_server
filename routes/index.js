@@ -30,6 +30,9 @@ router.post("/new-matrix", matrixController.createMatrix);
 // update matrix
 router.put("/update-matrix", matrixController.updateMatrix);
 
+//update matrix title
+router.put("/update-title", matrixController.updateTitle);
+
 // delete matrix
 router.post("/delete-matrix", matrixController.deleteMatrix);
 
