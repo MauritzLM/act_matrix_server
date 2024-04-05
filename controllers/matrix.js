@@ -61,7 +61,6 @@ exports.createMatrix = [
     auth,
     body('title', 'please enter a title')
         .trim()
-        .notEmpty()
         .isLength({ min: 4, max: 20 })
         .escape(),
     async function (req, res, next) {
@@ -156,7 +155,6 @@ exports.updateTitle = [
     auth,
     body('newTitle', 'please enter a title')
         .trim()
-        .notEmpty()
         .isLength({ min: 4, max: 20 })
         .escape(),
     async function (req, res, next) {
@@ -190,17 +188,37 @@ exports.updateTitle = [
 // delete matrix
 exports.deleteMatrix = [
     auth,
+    body('title', 'please enter a valid title')
+        .trim()
+        .notEmpty()
+        .escape(),
     async function (req, res, next) {
         try {
+
+            // validation errors
+            const errors = validationResult(req);
+
+            if (!errors.isEmpty()) {
+                res.json({ errors: errors.array() });
+                return;
+            }
+
             // get instance id from request
-            const { instance_id, user_id } = req.body;
+            const { instance_id, user_id, title } = req.body;
 
             // remove row from table using id
-            const text = 'DELETE FROM matrix_instances WHERE instance_id = $1 AND user_profile = $2';
-            const values = [instance_id, user_id];
+            const text = 'DELETE FROM matrix_instances WHERE instance_id = $1 AND user_profile = $2 AND title = $3';
+            const values = [instance_id, user_id, title];
 
             const result = await db.query(text, values);
 
+            // incorrect title
+            if (!result.rowCount) {
+                res.json({ errors: [{ msg: 'please enter the correct title' }] });
+                return;
+            }
+
+            // success
             res.json("delete successful");
         }
         catch (error) {
