@@ -3,6 +3,7 @@ const router = express.Router();
 
 const authController = require("../controllers/auth");
 const matrixController = require("../controllers/matrix");
+const userController = require("../controllers/user");
 
 // AUTHENTICATION
 // sign up
@@ -35,5 +36,8 @@ router.put("/update-title", matrixController.updateTitle);
 
 // delete matrix
 router.post("/delete-matrix", matrixController.deleteMatrix);
+
+// USER PROFILE
+router.post("/update-profile", userController.updateProfile);
 
 module.exports = router;
