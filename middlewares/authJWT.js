@@ -1,7 +1,6 @@
 
 const { expressjwt: jwt } = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
-// const { auth } = require('express-oauth2-jwt-bearer');
 require('dotenv').config();
 
 
@@ -12,17 +11,11 @@ module.exports = jwt({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri: `https://dev-zjk4ooufkrhlmh82.us.auth0.com/.well-known/jwks.json`
+    jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`
   }),
 
   // Validate the audience and the issuer
   audience: 'http://localhost:3000', //replace with your API's audience, available at Dashboard > APIs
-  issuer: 'https://dev-zjk4ooufkrhlmh82.us.auth0.com/',
+  issuer: `https://${process.env.AUTH0_DOMAIN}/`,
   algorithms: ['RS256']
 });
-
-// module.exports = auth({
-//   audience: 'http://localhost:3000',
-//   issuerBaseURL: 'https://dev-zjk4ooufkrhlmh82.us.auth0.com/',
-//   tokenSigningAlg: 'RS256'
-// });
