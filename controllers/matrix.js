@@ -90,12 +90,6 @@ exports.createMatrix = [
                 return res.json("something went wrong")
             };
 
-            // if successful add instance to user_profile (not needed anymore*)
-            // const user_text = 'UPDATE user_profiles SET matrix_instances = array_append(matrix_instances, $1) WHERE user_id = $2';
-            // const user_values = [instance_id, user_id];
-
-            // const user_result = await db.query(user_text, user_values);
-
             // send success message
             res.json({ msg: 'matrix created' });
         }
@@ -111,7 +105,7 @@ exports.updateMatrix = [
     auth,
     async function (req, res, next) {
         try {
-            // validate and sanitize*
+            // validate and sanitize
             // get id and quadrant content from request
             const { instance_id, quadrant_content, quadrant_number } = req.body;
 
