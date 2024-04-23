@@ -6,7 +6,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
  const corsOptions = {
-     origin: 'https://act-matrix.vercel.app/',
+     origin: 'https://act-matrix.vercel.app',
      optionsSuccessStatus: 200
  }
 
