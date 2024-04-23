@@ -15,7 +15,7 @@ module.exports = jwt({
   }),
 
   // Validate the audience and the issuer
-  audience: 'http://localhost:3000', //replace with your API's audience, available at Dashboard > APIs
+  audience: process.env.AUTH0_AUDIENCE, //replace with your API's audience, available at Dashboard > APIs
   issuer: `https://${process.env.AUTH0_DOMAIN}/`,
   algorithms: ['RS256']
 });
