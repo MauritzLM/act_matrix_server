@@ -13,7 +13,7 @@ exports.getMatrix = [
             const { id } = req.body;
 
             // get matrix using title
-            const text = 'SELECT * FROM matrix_instances WHERE instance_id = $1';
+            const text = 'SELECT * FROM matrices WHERE instance_id = $1';
             const values = [id];
 
             const result = await db.query(text, values);
@@ -39,7 +39,7 @@ exports.getAllMatrix = [
             const { user_id } = req.body;
 
             // query db
-            const text = 'SELECT * FROM matrix_instances WHERE user_profile = $1';
+            const text = 'SELECT * FROM matrices WHERE user_profile = $1';
             const values = [user_id];
 
             const result = await db.query(text, values);
@@ -78,7 +78,7 @@ exports.createMatrix = [
             const { title, user_id } = req.body;
 
             // create new matrix instance
-            const text = 'INSERT INTO matrix_instances (user_profile, title) VALUES ($1, $2) RETURNING instance_id';
+            const text = 'INSERT INTO matrices (user_profile, title) VALUES ($1, $2) RETURNING instance_id';
             const values = [user_id, title];
 
             const result = await db.query(text, values);
@@ -117,16 +117,16 @@ exports.updateMatrix = [
             // text of db query based on which quadrant
             switch (quadrant_number) {
                 case 1:
-                    text = 'UPDATE matrix_instances SET quadrant_1 = $1 WHERE instance_id = $2';
+                    text = 'UPDATE matrices SET quadrant_1 = $1 WHERE instance_id = $2';
                     break;
                 case 2:
-                    text = 'UPDATE matrix_instances SET quadrant_2 = $1 WHERE instance_id = $2';
+                    text = 'UPDATE matrices SET quadrant_2 = $1 WHERE instance_id = $2';
                     break;
                 case 3:
-                    text = 'UPDATE matrix_instances SET quadrant_3 = $1 WHERE instance_id = $2';
+                    text = 'UPDATE matrices SET quadrant_3 = $1 WHERE instance_id = $2';
                     break;
                 case 4:
-                    text = 'UPDATE matrix_instances SET quadrant_4 = $1 WHERE instance_id = $2';
+                    text = 'UPDATE matrices SET quadrant_4 = $1 WHERE instance_id = $2';
             }
 
             // query db
@@ -165,7 +165,7 @@ exports.updateTitle = [
             const { instance_id, newTitle } = req.body;
 
 
-            const text = 'UPDATE matrix_instances SET title = $1 WHERE instance_id = $2';
+            const text = 'UPDATE matrices SET title = $1 WHERE instance_id = $2';
             const values = [newTitle, instance_id];
 
             const result = await db.query(text, values);
@@ -201,7 +201,7 @@ exports.deleteMatrix = [
             const { instance_id, user_id, title } = req.body;
 
             // remove row from table using id
-            const text = 'DELETE FROM matrix_instances WHERE instance_id = $1 AND user_profile = $2 AND title = $3';
+            const text = 'DELETE FROM matrices WHERE instance_id = $1 AND user_profile = $2 AND title = $3';
             const values = [instance_id, user_id, title];
 
             const result = await db.query(text, values);
