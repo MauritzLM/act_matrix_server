@@ -1,4 +1,4 @@
-// all AUTH endpoints*
+
 const auth = require("../middlewares/authJWT");
 const db = require("../db");
 const { body, validationResult } = require('express-validator');
@@ -135,7 +135,7 @@ exports.updateMatrix = [
             const result = await db.query(text, values);
 
             // success message
-            res.json("matrix updated");
+            res.json("save successful");
 
         }
         catch (error) {
