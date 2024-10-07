@@ -5,8 +5,9 @@ const routes = require("./routes/index");
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
+// https://act-matrix.vercel.app for production
  const corsOptions = {
-     origin: 'https://act-matrix.vercel.app',
+     origin: ['http://localhost:5173', 'https://act-matrix.vercel.app'],
      optionsSuccessStatus: 200
  }
 
